@@ -6,3 +6,4 @@ matplotlib
 seaborn
 fastapi
 uvicorn
+gdown

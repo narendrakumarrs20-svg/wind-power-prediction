@@ -1,3 +1,21 @@
+import os
+import gdown
+
+DATA_DIR = "data"
+os.makedirs(DATA_DIR, exist_ok=True)
+
+files = {
+    "Panapatty_.2018_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing",
+    "Panapatty_.2019_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing",
+    "Panapatty_.2020_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing",
+    "Panapatty_.2021_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing"
+}
+
+for name, file_id in files.items():
+    path = os.path.join(DATA_DIR, name)
+    if not os.path.exists(path):
+        gdown.download(f"https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing", path, quiet=False)
+
 from fastapi import FastAPI
 from wind_predictor import WindPowerPredictor
 
