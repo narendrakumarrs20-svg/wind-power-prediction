@@ -1,17 +1,19 @@
-import streamlit as st
+from flask import Flask, jsonify, render_template
+from wind_predictor import run_cloud_prediction
 
-st.set_page_config(page_title="Wind Power Prediction", layout="centered")
+app = Flask(__name__)
 
-st.title("🌬️ Wind Power Prediction App")
+@app.route("/")
+def dashboard():
+    return render_template("dashboard.html")
 
-st.header("Enter Wind Parameters")
+@app.route("/api/predict")
+def predict():
+    result = run_cloud_prediction(
+        model_type="random_forest",
+        date_range=None
+    )
+    return jsonify(result)
 
-wind_speed = st.text_input("Wind Speed (m/s)")
-temperature = st.text_input("Temperature (°C)")
-
-uploaded_file = st.file_uploader("Upload Wind Dataset (CSV)", type=["csv"])
-
-if st.button("Predict Power"):
-    st.success("Prediction button clicked!")
-
-st.write("App is running successfully 🚀")
+if __name__ == "__main__":
+    app.run()
