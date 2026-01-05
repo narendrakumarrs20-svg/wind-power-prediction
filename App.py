@@ -60,7 +60,7 @@ if uploaded_file is not None:
                     'Panapatty_.2019_scada_data.csv',
                     'Panapatty_.2020_scada_data.csv'
                 ],
-                test_file=Panapatty_.2021_scada_data.csv
+                test_file="Panapatty_.2021_scada_data.csv"
             )
 
             with st.spinner("Processing data and training model..."):
