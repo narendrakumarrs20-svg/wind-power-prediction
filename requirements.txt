@@ -1,10 +1,7 @@
+streamlit
 pandas
 numpy
 scikit-learn
-statsmodels
 matplotlib
 seaborn
-fastapi
-uvicorn
-gdown
-streamlit
+python-dateutil
