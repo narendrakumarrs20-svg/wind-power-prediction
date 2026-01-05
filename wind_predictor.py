@@ -493,9 +493,12 @@ class WindPowerPredictor:
         except Exception as e:
             logger.error(f"Prediction failed: {e}", exc_info=True)
             raise
+# --- ADD THIS TO THE END OF wind_predictor.py ---
+
 def run_cloud_prediction(model_type='random_forest', date_range=None):
+    """Bridge function for cloud environment deployment."""
     predictor = WindPowerPredictor(
-        base_path="tools",
+        base_path="data", # Matches the DATA_DIR in App.py
         train_files=[
             'Panapatty_.2018_scada_data.csv',
             'Panapatty_.2019_scada_data.csv',
@@ -510,18 +513,18 @@ def run_cloud_prediction(model_type='random_forest', date_range=None):
         date_range=date_range
     )
 
-    # Send only summary (important for dashboard)
-    response = {
-        "mean_actual": metrics["Mean_Actual"],
-        "mean_predicted": metrics["Mean_Predicted"],
-        "mae": metrics["MAE"],
-        "rmse": metrics["RMSE"],
-        "r2": metrics["R2"]
-    }
+    return results_df, metrics
 
-    return response
-
-
-# Main execution
-if __name__ == "__main__" and os.environ.get("RENDER") != "true":
-   
+if __name__ == "__main__":
+    # This prevents the script from running interactive 'input()' prompts on Render
+    if os.environ.get("RENDER") != "true":
+        BASE_PATH = "data"
+        TRAIN_FILES = [
+            'Panapatty_.2018_scada_data.csv',
+            'Panapatty_.2019_scada_data.csv',
+            'Panapatty_.2020_scada_data.csv'
+        ]
+        TEST_FILE = 'Panapatty_.2021_scada_data.csv'
+        
+        predictor = WindPowerPredictor(base_path=BASE_PATH, train_files=TRAIN_FILES, test_file=TEST_FILE)
+        # Add local test calls here if needed
