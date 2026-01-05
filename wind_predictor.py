@@ -493,60 +493,35 @@ class WindPowerPredictor:
         except Exception as e:
             logger.error(f"Prediction failed: {e}", exc_info=True)
             raise
-
-
-# Main execution
-if __name__ == "__main__":
-
-    BASE_PATH = r"/tools"
-    TRAIN_FILES = [
-        'Panapatty_.2018_scada_data.csv',
-        'Panapatty_.2019_scada_data.csv',
-        'Panapatty_.2020_scada_data.csv'
-    ]
-
-    TEST_FILE = 'Panapatty_.2021_scada_data.csv'
-    OUTPUT_DIR = 'output'
-    MODEL_TYPE = 'random_forest'
-
-    if not os.path.isdir(BASE_PATH):
-        print(f"\n❌ ERROR: Directory not found: {BASE_PATH}")
-        sys.exit(1)
-
-    # User input for prediction mode
-    print("\n" + "="*70)
-    print("WIND POWER PREDICTION SYSTEM")
-    print("="*70)
-    print("\nPrediction Mode:")
-    print("  1. Full Year (2021)")
-    print("  2. Date Range")
-
-    mode = input("\nSelect mode (1/2): ").strip()
-
-    date_range = None
-
-    if mode == '2':
-        start = input("Enter start date (YYYY-MM-DD): ").strip()
-        end = input("Enter end date (YYYY-MM-DD): ").strip()
-        try:
-            pd.to_datetime(start)
-            pd.to_datetime(end)
-            date_range = (start, end)
-        except:
-            print("❌ Invalid date format. Using full year.")
-
-    # Initialize and run
+def run_cloud_prediction(model_type='random_forest', date_range=None):
     predictor = WindPowerPredictor(
-        base_path=BASE_PATH,
-        train_files=TRAIN_FILES,
-        test_file=TEST_FILE,
-        output_dir=OUTPUT_DIR
+        base_path="tools",
+        train_files=[
+            'Panapatty_.2018_scada_data.csv',
+            'Panapatty_.2019_scada_data.csv',
+            'Panapatty_.2020_scada_data.csv'
+        ],
+        test_file='Panapatty_.2021_scada_data.csv',
+        output_dir='output'
     )
 
-    results, metrics = predictor.run_prediction(
-        model_type=MODEL_TYPE,
+    results_df, metrics = predictor.run_prediction(
+        model_type=model_type,
         date_range=date_range
     )
 
-    print(f"\n📁 Results saved to: {OUTPUT_DIR}/")
-    print("="*70 + "\n")
+    # Send only summary (important for dashboard)
+    response = {
+        "mean_actual": metrics["Mean_Actual"],
+        "mean_predicted": metrics["Mean_Predicted"],
+        "mae": metrics["MAE"],
+        "rmse": metrics["RMSE"],
+        "r2": metrics["R2"]
+    }
+
+    return response
+
+
+# Main execution
+if __name__ == "__main__" and os.environ.get("RENDER") != "true":
+   
