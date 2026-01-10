@@ -12,21 +12,22 @@ if not os.path.exists(DATA_DIR):
 
 @st.cache_data
 def download_training_data():
-    """Downloads training CSVs from Google Drive using gdown."""
-    # MANDATORY: Replace these placeholder IDs with your actual FILE IDs
     files = {
-        "Panapatty_.2018_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing",
-        "Panapatty_.2019_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing",
-        "Panapatty_.2020_scada_data.csv": "https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing"
+        "Panapatty_.2018_scada_data.csv": "1aka58ljL8Jtyy6haVagdJC-ZUdK-X2DK",
+        "Panapatty_.2019_scada_data.csv": "1Clqxs3BlaSP7mbyJuqOPjmgqPzhve31q",
+        "Panapatty_.2020_scada_data.csv": "1XMZ5_fTO86yutzrsIzGiocGGI8MJOZO0"
     }
     
     for filename, file_id in files.items():
         path = os.path.join(DATA_DIR, filename)
-        if not os.path.exists(path):
+        if not os.path.exists(path) or os.path.getsize(path) < 1000: # Redownload if file is missing or too small
             with st.spinner(f"Downloading {filename}..."):
-                # Correct gdown URL format for individual files
-                url = f"https://drive.google.com/drive/folders/16v2CMHX96gtsIcusB2ZamzZ-G1IaU6p0?usp=sharing"
+                url = f'https://drive.google.com/uc?id={file_id}'
                 gdown.download(url, path, quiet=False)
+                
+                # Verify if the download actually worked
+                if os.path.exists(path) and os.path.getsize(path) < 1000:
+                    st.error(f"⚠️ {filename} is too small! Check Google Drive Sharing Permissions.")
 
 download_training_data()
 
